@@ -1,5 +1,6 @@
 const {
   selectTopics,
+  selectArticleById
 } = require('../models/models')
 const endpoints = require('../endpoints.json')
 
@@ -12,7 +13,16 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getEndpoints = (req, res, next) => {
-  res.status(200).send( {endpoints} )
+  res.status(200).send({ endpoints })
+}
+
+exports.getArticleById = (req, res, next) => {
+  const articleId = req.params.article_id
+  selectArticleById(articleId)
+  .then((article) => {
+    res.status(200).send({ article })
+  })
+  .catch(next)
 }
 
 exports.handleNonExist = (req, res, next) => {
