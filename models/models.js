@@ -17,3 +17,18 @@ exports.selectArticleById = (articleId) => {
     return result.rows[0];
   })
 }
+
+exports.selectArticles = () => {
+  return db.query(`
+  SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
+  CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
+  FROM articles
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id
+  GROUP BY articles.article_id
+  ORDER BY created_at DESC;
+  `)
+  .then((response) => {
+    return response.rows
+  })
+}
