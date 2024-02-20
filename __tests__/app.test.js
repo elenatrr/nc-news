@@ -114,6 +114,61 @@ describe("App", () => {
           expect(response.body.msg).toBe("Bad request");
         });
     });
+    test("PATCH:200 updates an article by article_id and responds with the updated article", () => {
+      const updatedArticle = {
+        article_id: 1,
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: "2020-07-09T20:11:00.000Z",
+        votes: -1,
+        article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -101 })
+        .expect(200)
+        .then((response) => {
+          expect(response.body.article).toEqual(updatedArticle);
+        });
+    });
+    test('PATCH:400 responds with error message when passed invalid data', () => {
+      return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 'one' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+    });
+    test('PATCH:400 responds with error message when passed no data', () => {
+      return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+    });
+    test("PATCH:400 responds with error message when given an invalid id", () => {
+      return request(app)
+      .patch("/api/articles/three")
+      .send({ inc_votes: '10' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+    });
+    test("PATCH:404 responds with error message when given a valid but non-existent id", () => {
+      return request(app)
+      .patch("/api/articles/9999")
+      .send({ inc_votes: '10' })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+    });
   });
 
   describe("/api/articles", () => {
@@ -267,6 +322,30 @@ describe("App", () => {
         .then((response) => {
           expect(response.body.msg).toBe("Unprocessable entity");
         });
+    });
+    test("POST:400 responds with error message when given an invalid id", () => {
+      return request(app)
+      .post("/api/articles/three/comments")
+      .send({
+        body: "Hello World!",
+        username: "lurker",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+    });
+    test("POST:404 responds with error message when given a valid but non-existent id", () => {
+      return request(app)
+      .post("/api/articles/9999/comments")
+      .send({
+        body: "Hello World!",
+        username: "lurker",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
     });
   });
 });
