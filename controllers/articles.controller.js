@@ -24,7 +24,8 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   const body = req.body;
   const articleId = req.params.article_id;
-  return selectArticleById(articleId)
+
+  selectArticleById(articleId)
     .then(() => {
       return editArticle(body, articleId);
     })
