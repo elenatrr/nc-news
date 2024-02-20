@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { selectTopics, selectArticleById } = require("./models");
+const { selectTopics, selectArticleById } = require("./articles.model");
 const { selectUser } = require("./users.model");
 
 exports.selectCommentsByArticleId = (articleId) => {

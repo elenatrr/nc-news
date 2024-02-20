@@ -1,16 +1,10 @@
 const express = require("express");
 const app = express();
-const {
-  getTopics,
-  getEndpoints,
-  getArticleById,
-  handleNonExist,
-  getArticles,
-} = require("./controllers/controllers");
-const {
-  getCommentsByArticleId,
-  postComment,
-} = require("./controllers/comments.controller");
+const { getArticleById, getArticles } = require("./controllers/articles.controller");
+const { getCommentsByArticleId, postComment } = require("./controllers/comments.controller");
+const { getTopics } = require("./controllers/topics.controller")
+const { getEndpoints } = require("./controllers/endpoints.controller")
+const { handleNonExist } = require('./controllers/non-exist-route.controller')
 
 app.use(express.json());
 
