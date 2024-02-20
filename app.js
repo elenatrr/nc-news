@@ -4,7 +4,8 @@ const {
   getTopics,
   getEndpoints,
   getArticleById,
-  handleNonExist
+  handleNonExist,
+  getArticles
 } = require('./controllers/controllers')
 
 app.get('/api/topics', getTopics)
@@ -12,6 +13,8 @@ app.get('/api/topics', getTopics)
 app.get('/api', getEndpoints)
 
 app.get('/api/articles/:article_id', getArticleById)
+
+app.get('/api/articles', getArticles)
 
 app.all('/*', handleNonExist)
 
