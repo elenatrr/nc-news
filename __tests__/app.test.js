@@ -323,5 +323,29 @@ describe("App", () => {
           expect(response.body.msg).toBe("Unprocessable entity");
         });
     });
+    test("POST:400 responds with error message when given an invalid id", () => {
+      return request(app)
+      .post("/api/articles/three/comments")
+      .send({
+        body: "Hello World!",
+        username: "lurker",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+    });
+    test("POST:404 responds with error message when given a valid but non-existent id", () => {
+      return request(app)
+      .post("/api/articles/9999/comments")
+      .send({
+        body: "Hello World!",
+        username: "lurker",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+    });
   });
 });
