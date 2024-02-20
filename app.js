@@ -7,6 +7,9 @@ const {
   handleNonExist,
   getArticles,
 } = require("./controllers/controllers");
+const {
+  getCommentsByArticleId
+} = require('./controllers/comments.controller')
 
 app.get("/api/topics", getTopics);
 
@@ -15,6 +18,8 @@ app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getArticles);
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
 
 app.all("/*", handleNonExist);
 

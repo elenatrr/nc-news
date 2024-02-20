@@ -137,7 +137,7 @@ describe("App", () => {
     });
 
     describe("each article", () => {
-      test("should be sorted by date in descending order and should not have a body property", () => {
+      test("should be sorted by date in descending order", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
@@ -145,11 +145,76 @@ describe("App", () => {
             expect(response.body.articles).toBeSortedBy("created_at", {
               descending: true,
             });
+          });
+      });
+      test("should not have a body property", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then((response) => {
             response.body.articles.forEach((article) => {
               expect(article).not.toHaveProperty("body");
             });
           });
       });
     });
+  });
+
+  describe('/api/articles/:article_id/comments', () => {
+    test('GET:200 responds with a list of comments by article_id', () => {
+      return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(11);
+        response.body.comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(comment.article_id).toBe(1);
+        });
+      });
+    });
+
+    test('should respond with an array of comments oredered by date: most recent comments first', () => {
+      return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+    });
+
+    test('GET:200 responds with an empty array when there are no comments by given article_id', () => {
+      return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toBeInstanceOf(Array)
+        expect(response.body.comments.length).toBe(0);
+      });
+    });
+
+    test('GET:404 responds with error message when given a valid but non-existent id', () => {
+      return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      });
+    })
+
+    test('GET:400 responds with error message when given an invalid id', () => {
+      return request(app)
+      .get("/api/articles/one/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+    })
   });
 });
