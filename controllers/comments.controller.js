@@ -3,12 +3,17 @@ const {
   addComment,
 } = require("../models/comments.model");
 const { selectArticleById } = require("../models/articles.model");
+const { selectUser } = require("../models/users.model");
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const articleId = req.params.article_id;
-  selectCommentsByArticleId(articleId)
-    .then((comments) => {
-      res.status(200).send({ comments });
+
+  Promise.all([
+    selectCommentsByArticleId(articleId),
+    selectArticleById(articleId)
+  ])
+    .then((resolutions) => {
+      res.status(200).send({ comments: resolutions[0] });
     })
     .catch(next);
 };
@@ -16,15 +21,14 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.postComment = (req, res, next) => {
   const body = req.body;
   const articleId = req.params.article_id;
-  return selectArticleById(articleId)
-    .then(() => {
-      return addComment(body, articleId);
+
+  Promise.all([
+    selectUser(body.username),
+    selectArticleById(articleId),
+    addComment(body, articleId),
+  ])
+    .then((resolutions) => {
+      res.status(201).send({ comment: resolutions[2] });
     })
-    .then((comment) => {
-      res.status(201).send({ comment });
-    })
-    .catch((err) => {
-      console.log(err);
-      next(err);
-    });
+    .catch(next);
 };
