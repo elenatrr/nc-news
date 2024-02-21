@@ -34,7 +34,7 @@ exports.selectArticles = () => {
     });
 };
 
-exports.editArticle = (votes, articleId) => {
+exports.updateArticle = (votes, articleId) => {
   return db
     .query(
       `UPDATE articles

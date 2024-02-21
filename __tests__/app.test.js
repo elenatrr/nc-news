@@ -133,10 +133,10 @@ describe("App", () => {
             expect(response.body.article).toEqual(updatedArticle);
           });
       });
-      test("PATCH:400 responds with error message when passed invalid data", () => {
+      test("PATCH:400 responds with error message when passed invalid data type", () => {
         return request(app)
           .patch("/api/articles/1")
-          .send({ inc_votes: "one" })
+          .send({ inc_votes: "1000" })
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");
@@ -154,7 +154,7 @@ describe("App", () => {
       test("PATCH:400 responds with error message when given an invalid id", () => {
         return request(app)
           .patch("/api/articles/three")
-          .send({ inc_votes: "10" })
+          .send({ inc_votes: 10 })
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");
@@ -163,7 +163,7 @@ describe("App", () => {
       test("PATCH:404 responds with error message when given a valid but non-existent id", () => {
         return request(app)
           .patch("/api/articles/9999")
-          .send({ inc_votes: "10" })
+          .send({ inc_votes: 10 })
           .expect(404)
           .then((response) => {
             expect(response.body.msg).toBe("Not found");
