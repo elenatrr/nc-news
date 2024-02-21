@@ -3,6 +3,7 @@ const {
   selectArticles,
   updateArticle,
 } = require("../models/articles.model");
+const { checkExists } = require("../db/seeds/utils");
 
 exports.getArticleById = (req, res, next) => {
   const articleId = req.params.article_id;
@@ -29,7 +30,10 @@ exports.patchArticle = (req, res, next) => {
     return res.status(400).send({ msg: "Bad request" });
   }
 
-  Promise.all([selectArticleById(articleId), updateArticle(body, articleId)])
+  Promise.all([
+    checkExists("articles", "article_id", articleId),
+    updateArticle(body, articleId),
+  ])
     .then((resolutions) => {
       res.status(200).send({ article: resolutions[1] });
     })
