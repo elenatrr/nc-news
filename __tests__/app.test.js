@@ -14,30 +14,6 @@ beforeEach(async () => seed({ articleData, commentData, topicData, userData }));
 afterAll(() => db.end());
 
 describe("App", () => {
-  describe("/api/topics", () => {
-    test("GET:200 responds with a list of topics", () => {
-      return request(app)
-        .get("/api/topics")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.topics.length).toBe(3);
-          response.body.topics.forEach((topic) => {
-            expect(typeof topic.slug).toBe("string");
-            expect(typeof topic.description).toBe("string");
-          });
-        });
-    });
-  });
-  describe("/api/non-existent-route", () => {
-    test("GET:404 responds with error for route that does not exist", () => {
-      return request(app)
-        .get("/api/non-existent-route")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe("Route not found");
-        });
-    });
-  });
   describe("/api", () => {
     test("GET:200 responds with an object that contains all the available endpoints", () => {
       return request(app)
@@ -70,6 +46,72 @@ describe("App", () => {
                 expect(value.exampleResponse).toBeInstanceOf(Object);
               }
             }
+          });
+      });
+    });
+  });
+  describe("/api/non-existent-route", () => {
+    test("GET:404 responds with error for route that does not exist", () => {
+      return request(app)
+        .get("/api/non-existent-route")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Route not found");
+        });
+    });
+  });
+  describe("/api/topics", () => {
+    test("GET:200 responds with a list of topics", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.topics.length).toBe(3);
+          response.body.topics.forEach((topic) => {
+            expect(typeof topic.slug).toBe("string");
+            expect(typeof topic.description).toBe("string");
+          });
+        });
+    });
+  });
+  describe("/api/articles", () => {
+    test("GET:200 responds with a list of articles", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          response.body.articles.forEach((article) => {
+            expect(typeof article.article_id).toBe("number");
+            expect(typeof article.title).toBe("string");
+            expect(typeof article.topic).toBe("string");
+            expect(typeof article.author).toBe("string");
+            expect(typeof article.created_at).toBe("string");
+            expect(typeof article.votes).toBe("number");
+            expect(typeof article.article_img_url).toBe("string");
+            expect(typeof article.comment_count).toBe("number");
+          });
+        });
+    });
+    describe("each article", () => {
+      test("should be sorted by date in descending order", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.articles).toBeSortedBy("created_at", {
+              descending: true,
+            });
+          });
+      });
+      test("should not have a body property", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then((response) => {
+            response.body.articles.forEach((article) => {
+              expect(article).not.toHaveProperty("body");
+            });
           });
       });
     });
@@ -167,48 +209,6 @@ describe("App", () => {
           .expect(404)
           .then((response) => {
             expect(response.body.msg).toBe("Not found");
-          });
-      });
-    });
-  });
-  describe("/api/articles", () => {
-    test("GET:200 responds with a list of articles", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.articles.length).toBe(13);
-          response.body.articles.forEach((article) => {
-            expect(typeof article.article_id).toBe("number");
-            expect(typeof article.title).toBe("string");
-            expect(typeof article.topic).toBe("string");
-            expect(typeof article.author).toBe("string");
-            expect(typeof article.created_at).toBe("string");
-            expect(typeof article.votes).toBe("number");
-            expect(typeof article.article_img_url).toBe("string");
-            expect(typeof article.comment_count).toBe("number");
-          });
-        });
-    });
-    describe("each article", () => {
-      test("should be sorted by date in descending order", () => {
-        return request(app)
-          .get("/api/articles")
-          .expect(200)
-          .then((response) => {
-            expect(response.body.articles).toBeSortedBy("created_at", {
-              descending: true,
-            });
-          });
-      });
-      test("should not have a body property", () => {
-        return request(app)
-          .get("/api/articles")
-          .expect(200)
-          .then((response) => {
-            response.body.articles.forEach((article) => {
-              expect(article).not.toHaveProperty("body");
-            });
           });
       });
     });
