@@ -321,7 +321,9 @@ describe("App", () => {
           })
           .expect(422)
           .then((response) => {
-            expect(response.body.msg).toBe("Unable to process the request: username does not exist");
+            expect(response.body.msg).toBe(
+              "Unable to process the request: username does not exist"
+            );
           });
       });
       test("POST:400 responds with error message when given an invalid id", () => {
@@ -348,6 +350,36 @@ describe("App", () => {
             expect(response.body.msg).toBe("Not found");
           });
       });
+    });
+  });
+  describe("/api/comments/:comment_id", () => {
+    test("DELETE:204 deletes a comment by comment_id and returns no content", () => {
+      return request(app)
+        .delete("/api/comments/9")
+        .expect(204)
+        .then((response) => {
+          expect(response.body).toEqual({});
+          return db.query("SELECT * FROM comments;");
+        })
+        .then((finalResponse) => {
+          expect(finalResponse.rows.length).toBe(17);
+        });
+    });
+    test("DELETE:404 responds with error message when given a valid but non-existent id", () => {
+      return request(app)
+        .delete("/api/comments/9999")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not found");
+        });
+    });
+    test("DELETE:400 responds with error message when given an invalid id", () => {
+      return request(app)
+        .delete("/api/comments/five")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
     });
   });
 });

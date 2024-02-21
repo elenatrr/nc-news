@@ -1,10 +1,18 @@
 const express = require("express");
 const app = express();
-const { getArticleById, getArticles, patchArticle } = require("./controllers/articles.controller");
-const { getCommentsByArticleId, postComment } = require("./controllers/comments.controller");
-const { getTopics } = require("./controllers/topics.controller")
-const { getEndpoints } = require("./controllers/endpoints.controller")
-const { handleNonExist } = require('./controllers/non-exist-route.controller')
+const {
+  getArticleById,
+  getArticles,
+  patchArticle,
+} = require("./controllers/articles.controller");
+const {
+  getCommentsByArticleId,
+  postComment,
+  deleteComment,
+} = require("./controllers/comments.controller");
+const { getTopics } = require("./controllers/topics.controller");
+const { getEndpoints } = require("./controllers/endpoints.controller");
+const { handleNonExist } = require("./controllers/non-exist-route.controller");
 
 app.use(express.json());
 
@@ -16,11 +24,13 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id", getArticleById);
 
-app.patch("/api/articles/:article_id", patchArticle)
+app.patch("/api/articles/:article_id", patchArticle);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.all("/*", handleNonExist);
 
