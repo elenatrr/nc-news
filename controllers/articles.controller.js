@@ -14,12 +14,19 @@ exports.getArticleById = (req, res, next) => {
     .catch(next);
 };
 
-exports.getArticles = (req, res, next) => {
-  selectArticles()
-    .then((articles) => {
-      res.status(200).send({ articles });
-    })
-    .catch(next);
+exports.getArticles = async (req, res, next) => {
+  try {
+    const topic = req.query.topic;
+    
+    if (typeof topic === 'string') {
+      await checkExists("topics", "slug", topic)
+    }
+
+    const articles = await selectArticles(topic)
+    res.status(200).send({ articles });
+  } catch (err) {
+    next(err)
+  }
 };
 
 exports.patchArticle = (req, res, next) => {
