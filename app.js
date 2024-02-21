@@ -13,6 +13,7 @@ const {
 const { getTopics } = require("./controllers/topics.controller");
 const { getEndpoints } = require("./controllers/endpoints.controller");
 const { handleNonExist } = require("./controllers/non-exist-route.controller");
+const { getUsers } = require("./controllers/users.controller");
 
 app.use(express.json());
 
@@ -31,6 +32,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api/users", getUsers);
 
 app.all("/*", handleNonExist);
 

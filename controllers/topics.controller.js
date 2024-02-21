@@ -1,6 +1,6 @@
 const {
   selectTopics
-} = require('../models/topics.models')
+} = require('../models/topics.model')
 
 exports.getTopics = (req, res, next) => {
   selectTopics()
