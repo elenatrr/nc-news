@@ -17,8 +17,12 @@ exports.getArticleById = (req, res, next) => {
 exports.getArticles = async (req, res, next) => {
   try {
     const topic = req.query.topic;
+
+    if (typeof topic === 'string' && topic.length === 0) {
+      return res.status(400).send({ msg: "Bad request" });
+    }
     
-    if (typeof topic === 'string') {
+    if (topic) {
       await checkExists("topics", "slug", topic)
     }
 

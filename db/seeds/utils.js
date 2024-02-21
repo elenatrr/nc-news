@@ -29,10 +29,6 @@ exports.checkExists = async (table, column, value) => {
     const queryStr = format("SELECT * FROM %I WHERE %I = $1;", table, column);
     const dbOutput = await db.query(queryStr, [value]);
 
-    if (!value) {
-      return Promise.reject({ status: 400, msg: "Bad request" });
-    }
-
     if (column === "username" && dbOutput.rows.length === 0) {
       return Promise.reject({
         status: 422,

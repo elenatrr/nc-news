@@ -3,6 +3,15 @@ const {
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
+const {
+  articleData,
+  commentData,
+  topicData,
+  userData,
+} = require("../db/data/test-data/index.js");
+const db = require('../db/connection')
+const seed = require("../db/seeds/seed.js");
+const { checkExists } = require("../db/seeds/utils.js")
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -102,3 +111,23 @@ describe("formatComments", () => {
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
 });
+
+describe('checkExists', () => {
+  beforeEach(async () => seed({ articleData, commentData, topicData, userData }));
+  afterAll(async () => { await db.end() });
+  
+  test('should reject with 404 if the value does not exist for a given column and table', async () => {
+    await expect(checkExists('articles', 'article_id', '99999')).rejects.toEqual({
+      status: 404,
+      msg: "Not found"
+    });
+  });
+
+  test('should reject with 422 if username does not exist', async () => {
+    await expect(checkExists('users', 'username', 'nonexistentuser')).rejects.toEqual({
+      status: 422,
+      msg: "Unable to process the request: username does not exist"
+    });
+  });
+});
+

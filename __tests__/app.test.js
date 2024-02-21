@@ -137,29 +137,29 @@ describe("App", () => {
           ]);
         });
     });
-    test('GET:200 responds with an empty array when there are no articles by given topic (existent)', () => {
+    test("GET:200 responds with an empty array when there are no articles by given topic (existent)", () => {
       return request(app)
-      .get("/api/articles?topic=paper")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.articles).toEqual([]);
-      });
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toEqual([]);
+        });
     });
-    test('GET:404 responds with error when given non-existent topic', () => {
+    test("GET:404 responds with error when given non-existent topic", () => {
       return request(app)
-      .get("/api/articles?topic=flowers")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.msg).toBe('Not found');
-      });
+        .get("/api/articles?topic=flowers")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not found");
+        });
     });
-    test('GET:400 responds with error when no topic provided', () => {
+    test("GET:400 responds with error when no topic provided", () => {
       return request(app)
-      .get("/api/articles?topic=")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.msg).toBe('Bad request');
-      });
+        .get("/api/articles?topic=")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
     });
   });
   describe("/api/articles/:article_id", () => {
