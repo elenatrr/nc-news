@@ -252,8 +252,9 @@ describe("App", () => {
               body: "I find this existence challenging",
               created_at: "2020-07-09T20:11:00.000Z",
               votes: 100,
-              article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              comment_count: 11
+              article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              comment_count: 11,
             });
           });
       });
@@ -415,6 +416,18 @@ describe("App", () => {
           .post("/api/articles/2/comments")
           .send({
             username: "lurker",
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("Bad request");
+          });
+      });
+      test("POST:400 responds with error message when provided empty body", () => {
+        return request(app)
+          .post("/api/articles/2/comments")
+          .send({
+            username: "lurker",
+            body: "",
           })
           .expect(400)
           .then((response) => {

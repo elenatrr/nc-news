@@ -2,6 +2,8 @@ const {
   selectArticleById,
   selectArticles,
   updateArticle,
+  selectCommentsByArticleId,
+  addCommentByArticleId,
 } = require("../models/articles.model");
 const { checkExists } = require("../db/seeds/utils");
 
@@ -65,4 +67,38 @@ exports.patchArticle = (req, res, next) => {
       res.status(200).send({ article: resolutions[1] });
     })
     .catch(next);
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  const articleId = req.params.article_id;
+
+  Promise.all([
+    selectCommentsByArticleId(articleId),
+    checkExists("articles", "article_id", articleId),
+  ])
+    .then((resolutions) => {
+      res.status(200).send({ comments: resolutions[0] });
+    })
+    .catch(next);
+};
+
+exports.postCommentByArticleId = async (req, res, next) => {
+  try {
+    const body = req.body;
+    const articleId = req.params.article_id;
+
+    if (!body.username || !body.body) {
+      return res.status(400).send({ msg: "Bad request" });
+    }
+
+    await Promise.all([
+      checkExists("users", "username", body.username),
+      checkExists("articles", "article_id", articleId),
+    ]);
+
+    const comment = await addCommentByArticleId(body, articleId);
+    res.status(201).send({ comment });
+  } catch (err) {
+    next(err);
+  }
 };
