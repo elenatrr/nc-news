@@ -18,20 +18,25 @@ exports.selectArticleById = (articleId) => {
     });
 };
 
-exports.selectArticles = () => {
+exports.selectArticles = (topic) => {
+  let queryString = `SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
+  CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
+  FROM articles LEFT JOIN comments
+  ON articles.article_id = comments.article_id`
+  const queryParams = []
+
+  if (topic) {
+    queryString += " WHERE articles.topic = $1"
+    queryParams.push(topic)
+  }
+
+  queryString += " GROUP BY articles.article_id ORDER BY created_at DESC;"
+
   return db
-    .query(
-      `SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
-      CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
-      FROM articles
-      LEFT JOIN comments
-      ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY created_at DESC;`
-    )
+    .query(queryString, queryParams)
     .then((response) => {
       return response.rows;
-    });
+    })
 };
 
 exports.updateArticle = (votes, articleId) => {
