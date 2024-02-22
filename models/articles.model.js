@@ -23,10 +23,10 @@ exports.selectArticleById = (articleId) => {
       }
 
       return result.rows[0];
-    })
+    });
 };
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = (topic, sortedBy, order) => {
   let queryString = `SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
   CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
   FROM articles LEFT JOIN comments
@@ -38,7 +38,7 @@ exports.selectArticles = (topic) => {
     queryParams.push(topic);
   }
 
-  queryString += " GROUP BY articles.article_id ORDER BY created_at DESC;";
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sortedBy} ${order}`;
 
   return db.query(queryString, queryParams).then((response) => {
     return response.rows;

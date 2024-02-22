@@ -153,12 +153,86 @@ describe("App", () => {
           expect(response.body.msg).toBe("Not found");
         });
     });
-    test("GET:400 responds with error when no topic provided", () => {
+    test("GET:200 treats empty query whith no topic provided as request for all articles", () => {
       return request(app)
         .get("/api/articles?topic=")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          response.body.articles.forEach((article) => {
+            expect(typeof article.article_id).toBe("number");
+            expect(typeof article.title).toBe("string");
+            expect(typeof article.topic).toBe("string");
+            expect(typeof article.author).toBe("string");
+            expect(typeof article.created_at).toBe("string");
+            expect(typeof article.votes).toBe("number");
+            expect(typeof article.article_img_url).toBe("string");
+            expect(typeof article.comment_count).toBe("number");
+          });
+        });
+    });
+  });
+  describe("/api/articles?sort_by=column", () => {
+    test("GET:200 responds with articles sorted by the column specified in the query (desc by default)", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("author", {
+            descending: true,
+          });
+        });
+    });
+    test("GET:404 responds with error when given non-existent column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=mood")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not found");
+        });
+    });
+    test("GET:200 responds with articles sorted by 'created_at' (by default) when given empty query whith no column provided", () => {
+      return request(app)
+        .get("/api/articles?sort_by=")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+  });
+  describe("/api/articles?order=chosenorder", () => {
+    test("GET:200 responds with articles sorted in either ascending or descending order specified in the query", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: false,
+          });
+        });
+    });
+    test('GET:400 responds with error when given value is neither "asc" nor "desc"', () => {
+      return request(app)
+        .get("/api/articles?order=ascending")
         .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("GET:200 responds with articles sorted in desc order (by default) when given empty query whith no value provided", () => {
+      return request(app)
+        .get("/api/articles?order=")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
   });
