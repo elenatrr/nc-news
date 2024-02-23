@@ -52,16 +52,16 @@ exports.getArticles = async (req, res, next) => {
 };
 
 exports.patchArticle = (req, res, next) => {
-  const body = req.body;
+  const votes = req.body.inc_votes;
   const articleId = req.params.article_id;
 
-  if (typeof body.inc_votes !== "number") {
+  if (typeof votes !== "number") {
     return res.status(400).send({ msg: "Bad request" });
   }
 
   Promise.all([
     checkExists("articles", "article_id", articleId),
-    updateArticle(body, articleId),
+    updateArticle(votes, articleId),
   ])
     .then((resolutions) => {
       res.status(200).send({ article: resolutions[1] });
