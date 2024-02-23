@@ -5,3 +5,11 @@ exports.selectUsers = () => {
     return result.rows;
   });
 };
+
+exports.selectUser = (username) => {
+  return db
+    .query("SELECT * FROM users WHERE username = $1;", [username])
+    .then((result) => {
+      return result.rows[0];
+    });
+};
