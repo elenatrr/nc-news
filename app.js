@@ -6,11 +6,11 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
-app.use((req, res, next) => {
+app.use((_req, res, _next) => {
   res.status(404).send({ msg: "Route not found" });
 });
 
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   const knownErrors = ["22P02", "23502"];
 
   if (err.status && err.msg) {
