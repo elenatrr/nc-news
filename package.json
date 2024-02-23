@@ -9,6 +9,8 @@
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
+    "test-utils": "npm t utils.test.js",
+    "test-app": "npm t app.test.js",
     "prepare": "husky install",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
