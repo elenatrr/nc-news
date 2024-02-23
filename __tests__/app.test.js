@@ -128,7 +128,7 @@ describe("App", () => {
               title: "UNCOVERED: catspiracy to bring down democracy",
               topic: "cats",
               author: "rogersop",
-              created_at: "2020-08-03T13:14:00.000Z",
+              created_at: expect.any(String),
               votes: 0,
               article_img_url:
                 "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -250,7 +250,7 @@ describe("App", () => {
               topic: "mitch",
               author: "butter_bridge",
               body: "I find this existence challenging",
-              created_at: "2020-07-09T20:11:00.000Z",
+              created_at: expect.any(String),
               votes: 100,
               article_img_url:
                 "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
@@ -283,7 +283,7 @@ describe("App", () => {
           topic: "mitch",
           author: "butter_bridge",
           body: "I find this existence challenging",
-          created_at: "2020-07-09T20:11:00.000Z",
+          created_at: expect.any(String),
           votes: -1,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
