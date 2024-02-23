@@ -276,7 +276,7 @@ describe("App", () => {
       });
     });
     describe("PATCH", () => {
-      test("PATCH:200 updates an article by article_id and responds with the updated article", () => {
+      test("PATCH:200 updates votes on an article by article_id and responds with the updated article", () => {
         const updatedArticle = {
           article_id: 1,
           title: "Living in the shadow of a great man",
@@ -486,33 +486,90 @@ describe("App", () => {
     });
   });
   describe("/api/comments/:comment_id", () => {
-    test("DELETE:204 deletes a comment by comment_id and returns no content", () => {
-      return request(app)
-        .delete("/api/comments/9")
-        .expect(204)
-        .then((response) => {
-          expect(response.body).toEqual({});
-          return db.query("SELECT * FROM comments;");
-        })
-        .then((finalResponse) => {
-          expect(finalResponse.rows.length).toBe(17);
-        });
+    describe("DELETE", () => {
+      test("DELETE:204 deletes a comment by comment_id and returns no content", () => {
+        return request(app)
+          .delete("/api/comments/9")
+          .expect(204)
+          .then((response) => {
+            expect(response.body).toEqual({});
+            return db.query("SELECT * FROM comments;");
+          })
+          .then((finalResponse) => {
+            expect(finalResponse.rows.length).toBe(17);
+          });
+      });
+      test("DELETE:404 responds with error message when given a valid but non-existent id", () => {
+        return request(app)
+          .delete("/api/comments/9999")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("Not found");
+          });
+      });
+      test("DELETE:400 responds with error message when given an invalid id", () => {
+        return request(app)
+          .delete("/api/comments/five")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("Bad request");
+          });
+      });
     });
-    test("DELETE:404 responds with error message when given a valid but non-existent id", () => {
-      return request(app)
-        .delete("/api/comments/9999")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe("Not found");
-        });
-    });
-    test("DELETE:400 responds with error message when given an invalid id", () => {
-      return request(app)
-        .delete("/api/comments/five")
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("Bad request");
-        });
+    describe("PATCH", () => {
+      test("PATCH:200 updates votes on a comment by comment_id and responds with the updated comment", () => {
+        const updatedComment = {
+          body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          votes: 10,
+          author: "butter_bridge",
+          article_id: 1,
+          created_at: expect.any(String),
+          comment_id: 2,
+        };
+        return request(app)
+          .patch("/api/comments/2")
+          .send({ inc_votes: -4 })
+          .expect(200)
+          .then((response) => {
+            expect(response.body.comment).toEqual(updatedComment);
+          });
+      });
+      test("PATCH:400 responds with error message when passed invalid data type", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: "1000" })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("Bad request");
+          });
+      });
+      test("PATCH:400 responds with error message when passed no data", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({})
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("Bad request");
+          });
+      });
+      test("PATCH:400 responds with error message when given an invalid id", () => {
+        return request(app)
+          .patch("/api/comments/three")
+          .send({ inc_votes: 10 })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe("Bad request");
+          });
+      });
+      test("PATCH:404 responds with error message when given a valid but non-existent id", () => {
+        return request(app)
+          .patch("/api/comments/9999")
+          .send({ inc_votes: 10 })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("Not found");
+          });
+      });
     });
   });
   describe("/api/users", () => {

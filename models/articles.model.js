@@ -52,7 +52,7 @@ exports.updateArticle = (votes, articleId) => {
       SET votes = votes + $1
       WHERE article_id = $2
       RETURNING *;`,
-      [votes.inc_votes, articleId]
+      [votes, articleId]
     )
     .then((response) => {
       return response.rows[0];
