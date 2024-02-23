@@ -6,9 +6,9 @@ commentRouter
   .route("/:comment_id")
   .delete(deleteComment)
   .patch(patchComment)
-  .all((req, res) => { 
-    res.setHeader('Allow', 'DELETE', 'PATCH');
-    res.status(405).send('Method Not Allowed');
+  .all((req, res) => {
+    res.setHeader("Allow", "DELETE", "PATCH");
+    res.status(405).send("Method Not Allowed");
   });
 
 module.exports = commentRouter;

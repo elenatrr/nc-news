@@ -10,27 +10,27 @@ const {
 articleRouter
   .route("/")
   .get(getArticles)
-  .all((req, res) => { 
-    res.setHeader('Allow', 'GET');
-    res.status(405).send('Method Not Allowed');
+  .all((req, res) => {
+    res.setHeader("Allow", "GET");
+    res.status(405).send("Method Not Allowed");
   });
 
 articleRouter
   .route("/:article_id")
   .get(getArticleById)
   .patch(patchArticle)
-  .all((req, res) => { 
-    res.setHeader('Allow', 'GET', 'PATCH');
-    res.status(405).send('Method Not Allowed');
+  .all((req, res) => {
+    res.setHeader("Allow", "GET", "PATCH");
+    res.status(405).send("Method Not Allowed");
   });
 
 articleRouter
   .route("/:article_id/comments")
   .get(getCommentsByArticleId)
   .post(postCommentByArticleId)
-  .all((req, res) => { 
-    res.setHeader('Allow', 'GET', 'POST');
-    res.status(405).send('Method Not Allowed');
+  .all((req, res) => {
+    res.setHeader("Allow", "GET", "POST");
+    res.status(405).send("Method Not Allowed");
   });
 
 module.exports = articleRouter;

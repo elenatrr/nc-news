@@ -216,7 +216,7 @@ describe("App", () => {
           });
         });
     });
-    test('GET:400 responds with error when given value is neither "asc" nor "desc"', () => {
+    test("GET:400 responds with error when given value is neither \"asc\" nor \"desc\"", () => {
       return request(app)
         .get("/api/articles?order=ascending")
         .expect(400)

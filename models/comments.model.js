@@ -6,14 +6,14 @@ exports.removeComment = (commentId) => {
 
 exports.updateComment = (votes, commentId) => {
   return db
-  .query(
-    `UPDATE comments
+    .query(
+      `UPDATE comments
     SET votes = votes + $1
     WHERE comment_id = $2
     RETURNING *;`,
-    [votes, commentId]
-  )
-  .then((response) => {
-    return response.rows[0];
-  });
-}
+      [votes, commentId]
+    )
+    .then((response) => {
+      return response.rows[0];
+    });
+};
