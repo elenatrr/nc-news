@@ -37,7 +37,7 @@ app.get("/api/users", getUsers);
 
 app.all("/*", handleNonExist);
 
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   }
