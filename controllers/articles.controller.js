@@ -92,7 +92,7 @@ exports.postCommentByArticleId = async (req, res, next) => {
     }
 
     await Promise.all([
-      checkExists("users", "username", body.username),
+      checkExists("users", "username", body.username, true),
       checkExists("articles", "article_id", articleId),
     ]);
 

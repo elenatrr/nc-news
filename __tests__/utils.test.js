@@ -123,8 +123,8 @@ describe("checkExists", () => {
     });
   });
 
-  test("should reject with 422 if username does not exist", async () => {
-    await expect(checkExists("users", "username", "nonexistentuser")).rejects.toEqual({
+  test("should reject with 422 if username does not exist on post request", async () => {
+    await expect(checkExists("users", "username", "nonexistentuser", true)).rejects.toEqual({
       status: 422,
       msg: "Unable to process the request: username does not exist"
     });

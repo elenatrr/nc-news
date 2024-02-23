@@ -2,7 +2,9 @@ const format = require("pg-format");
 const db = require("../connection");
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
-  if (!created_at) {return { ...otherProperties };}
+  if (!created_at) {
+    return { ...otherProperties };
+  }
   return { created_at: new Date(created_at), ...otherProperties };
 };
 
@@ -24,12 +26,14 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
-exports.checkExists = async (table, column, value) => {
+exports.checkExists = async (table, column, value, isPostReq = false) => {
   try {
     const queryStr = format("SELECT * FROM %I WHERE %I = $1;", table, column);
     const dbOutput = await db.query(queryStr, [value]);
+    const isUsernameNotFoundOnPost =
+      column === "username" && dbOutput.rows.length === 0 && isPostReq;
 
-    if (column === "username" && dbOutput.rows.length === 0) {
+    if (isUsernameNotFoundOnPost) {
       return Promise.reject({
         status: 422,
         msg: "Unable to process the request: username does not exist",
