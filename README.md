@@ -14,7 +14,7 @@ NC News is a backend service designed to mimic real-world API services like Redd
 
 Minimum versions needed to run the project:
 
-- Node.js ^16.0.0
+- Node.js ^18.0.0
 - PostgreSQL ^8.7.3
 
 ### Clone the Repository
