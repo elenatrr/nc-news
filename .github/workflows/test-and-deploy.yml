@@ -10,9 +10,10 @@ jobs:
     steps:
       - name: Notify if triggered
         run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-        
+
   test-utils:
     runs-on: ubuntu-latest
+    needs: notify
     steps:
       - name: Clone repo and checkout main
         uses: actions/checkout@v4
