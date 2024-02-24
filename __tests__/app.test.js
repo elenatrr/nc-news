@@ -11,7 +11,7 @@ const {
 const endpoints = require("../endpoints.json");
 
 beforeEach(async () => seed({ articleData, commentData, topicData, userData }));
-afterAll(async () => db.end());
+afterAll(async () => { await db.end(); });
 
 describe("App", () => {
   describe("/api", () => {
