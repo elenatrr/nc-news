@@ -40,8 +40,8 @@ exports.selectArticles = (topic, sortedBy, order) => {
 
   queryString += ` GROUP BY articles.article_id ORDER BY ${sortedBy} ${order}`;
 
-  return db.query(queryString, queryParams).then((response) => {
-    return response.rows;
+  return db.query(queryString, queryParams).then((result) => {
+    return result.rows;
   });
 };
 
@@ -54,8 +54,8 @@ exports.updateArticle = (votes, articleId) => {
       RETURNING *;`,
       [votes, articleId]
     )
-    .then((response) => {
-      return response.rows[0];
+    .then((result) => {
+      return result.rows[0];
     });
 };
 
@@ -65,8 +65,8 @@ exports.selectCommentsByArticleId = (articleId) => {
       "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
       [articleId]
     )
-    .then((response) => {
-      return response.rows;
+    .then((result) => {
+      return result.rows;
     });
 };
 
@@ -76,7 +76,30 @@ exports.addCommentByArticleId = (comment, articleId) => {
       "INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *",
       [comment.username, comment.body, articleId]
     )
-    .then((response) => {
-      return response.rows[0];
+    .then((result) => {
+      return result.rows[0];
+    });
+};
+
+exports.addArticle = (article) => {
+  return db
+    .query(
+      "INSERT INTO articles (title, topic, author, body, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
+      [article.title, article.topic, article.author, article.body, article.article_img_url]
+    )
+    .then((result) => {
+      const articleId = result.rows[0].article_id;
+      return db.query(
+        `SELECT articles.*,
+        CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
+        FROM articles LEFT JOIN comments
+        ON articles.article_id = comments.article_id
+        WHERE articles.article_id = $1
+        GROUP BY articles.article_id;`,
+        [articleId]
+      );
+    })
+    .then((result) => {
+      return result.rows[0];
     });
 };

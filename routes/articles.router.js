@@ -5,13 +5,15 @@ const {
   patchArticle,
   getCommentsByArticleId,
   postCommentByArticleId,
+  postArticle
 } = require("../controllers/articles.controller");
 
 articleRouter
   .route("/")
   .get(getArticles)
+  .post(postArticle)
   .all((req, res) => {
-    res.setHeader("Allow", "GET");
+    res.setHeader("Allow", "GET", "POST");
     res.status(405).send("Method Not Allowed");
   });
 

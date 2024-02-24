@@ -11,7 +11,7 @@ const {
 const endpoints = require("../endpoints.json");
 
 beforeEach(async () => seed({ articleData, commentData, topicData, userData }));
-afterAll(() => db.end());
+afterAll(async () => db.end());
 
 describe("App", () => {
   describe("/api", () => {
@@ -75,43 +75,200 @@ describe("App", () => {
     });
   });
   describe("/api/articles", () => {
-    test("GET:200 responds with a list of articles", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.articles.length).toBe(13);
-          response.body.articles.forEach((article) => {
-            expect(typeof article.article_id).toBe("number");
-            expect(typeof article.title).toBe("string");
-            expect(typeof article.topic).toBe("string");
-            expect(typeof article.author).toBe("string");
-            expect(typeof article.created_at).toBe("string");
-            expect(typeof article.votes).toBe("number");
-            expect(typeof article.article_img_url).toBe("string");
-            expect(typeof article.comment_count).toBe("number");
-          });
-        });
-    });
-    describe("each article", () => {
-      test("should be sorted by date in descending order", () => {
+    describe("GET", () => {
+      test("GET:200 responds with a list of articles", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
           .then((response) => {
-            expect(response.body.articles).toBeSortedBy("created_at", {
-              descending: true,
+            expect(response.body.articles.length).toBe(13);
+            response.body.articles.forEach((article) => {
+              expect(typeof article.article_id).toBe("number");
+              expect(typeof article.title).toBe("string");
+              expect(typeof article.topic).toBe("string");
+              expect(typeof article.author).toBe("string");
+              expect(typeof article.created_at).toBe("string");
+              expect(typeof article.votes).toBe("number");
+              expect(typeof article.article_img_url).toBe("string");
+              expect(typeof article.comment_count).toBe("number");
             });
           });
       });
-      test("should not have a body property", () => {
-        return request(app)
-          .get("/api/articles")
-          .expect(200)
-          .then((response) => {
-            response.body.articles.forEach((article) => {
-              expect(article).not.toHaveProperty("body");
+      describe("each article", () => {
+        test("should be sorted by date in descending order", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response) => {
+              expect(response.body.articles).toBeSortedBy("created_at", {
+                descending: true,
+              });
             });
+        });
+        test("should not have a body property", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then((response) => {
+              response.body.articles.forEach((article) => {
+                expect(article).not.toHaveProperty("body");
+              });
+            });
+        });
+      });
+    });
+    describe("POST", () => {
+      test("POST:201 inserts a new article to the db and sends the new article back to the client", () => {
+        const createdArticle = {
+          article_id: 14,
+          title: "Summer",
+          topic: "mitch",
+          author: "rogersop",
+          body: "I love dancing",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 0,
+        };
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            title: "Summer",
+            body: "I love dancing",
+            topic: "mitch",
+            article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(201)
+          .then((response) => {
+            expect(response.body.article).toEqual(createdArticle);
+          });
+      });
+      test("POST:404 responds with error message when given non-existent username", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "new_user",
+            title: "Summer",
+            body: "I love dancing",
+            topic: "mitch",
+            article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Not found"
+            );
+          });
+      });
+      test("POST:404 responds with error message when given non-existent topic", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            title: "Summer",
+            body: "Summer vibes",
+            topic: "sun",
+            article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Not found"
+            );
+          });
+      });
+      test("POST:400 responds with error message when no username provided", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "",
+            title: "Summer",
+            body: "I love dancing",
+            topic: "mitch",
+            article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Bad request"
+            );
+          });
+      });
+      test("POST:400 responds with error message when no topic provided", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            title: "Summer",
+            body: "I love dancing",
+            topic: "",
+            article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Bad request"
+            );
+          });
+      });
+      test("POST:400 responds with error message when no title provided", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            title: "",
+            body: "I love dancing",
+            topic: "mitch",
+            article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Bad request"
+            );
+          });
+      });
+      test("POST:400 responds with error message when no body provided", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            title: "Summer",
+            body: "",
+            topic: "mitch",
+            article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Bad request"
+            );
+          });
+      });
+      test("POST:400 responds with error message when no article_img_url provided", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "rogersop",
+            title: "Summer",
+            body: "Summer vibes",
+            topic: "mitch",
+            article_img_url: "",
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe(
+              "Bad request"
+            );
           });
       });
     });
@@ -411,18 +568,33 @@ describe("App", () => {
             });
           });
       });
-      test("POST:400 responds with error message when no body provided", () => {
+      test("POST:404 responds with error message when given non-existent username", () => {
         return request(app)
           .post("/api/articles/2/comments")
           .send({
-            username: "lurker",
+            body: "Hello World!",
+            username: "newuser",
           })
-          .expect(400)
+          .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
+            expect(response.body.msg).toBe(
+              "Not found"
+            );
           });
       });
-      test("POST:400 responds with error message when provided empty body", () => {
+      test("POST:404 responds with error message when given a valid but non-existent id", () => {
+        return request(app)
+          .post("/api/articles/9999/comments")
+          .send({
+            body: "Hello World!",
+            username: "lurker",
+          })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("Not found");
+          });
+      });
+      test("POST:400 responds with error message when no body provided", () => {
         return request(app)
           .post("/api/articles/2/comments")
           .send({
@@ -439,24 +611,11 @@ describe("App", () => {
           .post("/api/articles/2/comments")
           .send({
             body: "Hello World!",
+            username: ""
           })
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("POST:422 responds with error message when given non-existent username", () => {
-        return request(app)
-          .post("/api/articles/2/comments")
-          .send({
-            body: "Hello World!",
-            username: "newuser",
-          })
-          .expect(422)
-          .then((response) => {
-            expect(response.body.msg).toBe(
-              "Unable to process the request: username does not exist"
-            );
           });
       });
       test("POST:400 responds with error message when given an invalid id", () => {
@@ -469,18 +628,6 @@ describe("App", () => {
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("POST:404 responds with error message when given a valid but non-existent id", () => {
-        return request(app)
-          .post("/api/articles/9999/comments")
-          .send({
-            body: "Hello World!",
-            username: "lurker",
-          })
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Not found");
           });
       });
     });
@@ -534,6 +681,15 @@ describe("App", () => {
             expect(response.body.comment).toEqual(updatedComment);
           });
       });
+      test("PATCH:404 responds with error message when given a valid but non-existent id", () => {
+        return request(app)
+          .patch("/api/comments/9999")
+          .send({ inc_votes: 10 })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("Not found");
+          });
+      });
       test("PATCH:400 responds with error message when passed invalid data type", () => {
         return request(app)
           .patch("/api/comments/1")
@@ -546,7 +702,7 @@ describe("App", () => {
       test("PATCH:400 responds with error message when passed no data", () => {
         return request(app)
           .patch("/api/comments/1")
-          .send({})
+          .send({ inc_votes: ""})
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");
@@ -559,15 +715,6 @@ describe("App", () => {
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");
-          });
-      });
-      test("PATCH:404 responds with error message when given a valid but non-existent id", () => {
-        return request(app)
-          .patch("/api/comments/9999")
-          .send({ inc_votes: 10 })
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe("Not found");
           });
       });
     });

@@ -13,7 +13,7 @@ exports.updateComment = (votes, commentId) => {
     RETURNING *;`,
       [votes, commentId]
     )
-    .then((response) => {
-      return response.rows[0];
+    .then((result) => {
+      return result.rows[0];
     });
 };
