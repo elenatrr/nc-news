@@ -4,11 +4,13 @@ const {
   updateArticle,
   selectCommentsByArticleId,
   addCommentByArticleId,
+  addArticle
 } = require("../models/articles.model");
 const { checkExists } = require("../db/seeds/utils");
 
 exports.getArticleById = (req, res, next) => {
   const articleId = req.params.article_id;
+
   selectArticleById(articleId)
     .then((article) => {
       res.status(200).send({ article });
@@ -101,4 +103,18 @@ exports.postCommentByArticleId = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.postArticle = (req, res, next) => {
+  const body = req.body;
+
+  if (!body.title || !body.topic || !body.author || !body.body || !body.article_img_url) {
+    return res.status(400).send({ msg: "Bad request" });
+  }
+
+  Promise.all([checkExists("users", "username", body.author, true), checkExists("topics", "slug", body.topic, true), addArticle(body)])
+    .then((resolutions) => {
+      res.status(201).send({ article: resolutions[2] });
+    })
+    .catch(next);
 };

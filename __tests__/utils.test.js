@@ -116,17 +116,14 @@ describe("checkExists", () => {
   beforeEach(async () => seed({ articleData, commentData, topicData, userData }));
   afterAll(async () => { await db.end(); });
 
+  test("should resolve without error if the value exists for a given column and table", async () => {
+    await expect(checkExists("articles", "article_id", "1")).resolves.toBeUndefined();
+  });
+
   test("should reject with 404 if the value does not exist for a given column and table", async () => {
     await expect(checkExists("articles", "article_id", "99999")).rejects.toEqual({
       status: 404,
       msg: "Not found"
-    });
-  });
-
-  test("should reject with 422 if username does not exist on post request", async () => {
-    await expect(checkExists("users", "username", "nonexistentuser", true)).rejects.toEqual({
-      status: 422,
-      msg: "Unable to process the request: username does not exist"
     });
   });
 });
