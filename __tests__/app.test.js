@@ -11,7 +11,9 @@ const {
 const endpoints = require("../endpoints.json");
 
 beforeEach(async () => seed({ articleData, commentData, topicData, userData }));
-afterAll(async () => { await db.end(); });
+afterAll(async () => {
+  await db.end();
+});
 
 describe("App", () => {
   describe("/api", () => {
@@ -81,7 +83,8 @@ describe("App", () => {
           .get("/api/articles")
           .expect(200)
           .then((response) => {
-            expect(response.body.articles.length).toBe(13);
+            expect(response.body.articles.length).toBeLessThanOrEqual(13);
+            expect(response.body.articles.length).toBeGreaterThan(0);
             response.body.articles.forEach((article) => {
               expect(typeof article.article_id).toBe("number");
               expect(typeof article.title).toBe("string");
@@ -139,7 +142,7 @@ describe("App", () => {
             body: "I love dancing",
             topic: "mitch",
             article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(201)
           .then((response) => {
@@ -155,13 +158,11 @@ describe("App", () => {
             body: "I love dancing",
             topic: "mitch",
             article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Not found"
-            );
+            expect(response.body.msg).toBe("Not found");
           });
       });
       test("POST:404 responds with error message when given non-existent topic", () => {
@@ -173,13 +174,11 @@ describe("App", () => {
             body: "Summer vibes",
             topic: "sun",
             article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Not found"
-            );
+            expect(response.body.msg).toBe("Not found");
           });
       });
       test("POST:400 responds with error message when no username provided", () => {
@@ -191,13 +190,11 @@ describe("App", () => {
             body: "I love dancing",
             topic: "mitch",
             article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Bad request"
-            );
+            expect(response.body.msg).toBe("Bad request");
           });
       });
       test("POST:400 responds with error message when no topic provided", () => {
@@ -209,13 +206,11 @@ describe("App", () => {
             body: "I love dancing",
             topic: "",
             article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Bad request"
-            );
+            expect(response.body.msg).toBe("Bad request");
           });
       });
       test("POST:400 responds with error message when no title provided", () => {
@@ -227,13 +222,11 @@ describe("App", () => {
             body: "I love dancing",
             topic: "mitch",
             article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Bad request"
-            );
+            expect(response.body.msg).toBe("Bad request");
           });
       });
       test("POST:400 responds with error message when no body provided", () => {
@@ -245,13 +238,11 @@ describe("App", () => {
             body: "",
             topic: "mitch",
             article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Bad request"
-            );
+            expect(response.body.msg).toBe("Bad request");
           });
       });
       test("POST:400 responds with error message when no article_img_url provided", () => {
@@ -266,9 +257,7 @@ describe("App", () => {
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Bad request"
-            );
+            expect(response.body.msg).toBe("Bad request");
           });
       });
     });
@@ -315,7 +304,8 @@ describe("App", () => {
         .get("/api/articles?topic=")
         .expect(200)
         .then((response) => {
-          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles.length).toBeLessThanOrEqual(13);
+          expect(response.body.articles.length).toBeGreaterThan(0);
           response.body.articles.forEach((article) => {
             expect(typeof article.article_id).toBe("number");
             expect(typeof article.title).toBe("string");
@@ -335,7 +325,8 @@ describe("App", () => {
         .get("/api/articles?sort_by=author")
         .expect(200)
         .then((response) => {
-          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles.length).toBeLessThanOrEqual(13);
+          expect(response.body.articles.length).toBeGreaterThan(0);
           expect(response.body.articles).toBeSortedBy("author", {
             descending: true,
           });
@@ -349,12 +340,13 @@ describe("App", () => {
           expect(response.body.msg).toBe("Not found");
         });
     });
-    test("GET:200 responds with articles sorted by 'created_at' (by default) when given empty query whith no column provided", () => {
+    test("GET:200 responds with articles sorted by 'created_at' (by default) when no value provided", () => {
       return request(app)
-        .get("/api/articles?sort_by=")
+        .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles.length).toBeLessThanOrEqual(13);
+          expect(response.body.articles.length).toBeGreaterThan(0);
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
@@ -367,7 +359,8 @@ describe("App", () => {
         .get("/api/articles?order=asc")
         .expect(200)
         .then((response) => {
-          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles.length).toBeLessThanOrEqual(13);
+          expect(response.body.articles.length).toBeGreaterThan(0);
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: false,
           });
@@ -381,15 +374,137 @@ describe("App", () => {
           expect(response.body.msg).toBe("Bad request");
         });
     });
-    test("GET:200 responds with articles sorted in desc order (by default) when given empty query whith no value provided", () => {
+    test("GET:200 responds with articles sorted in desc order (by default) when no value provided", () => {
       return request(app)
-        .get("/api/articles?order=")
+        .get("/api/articles")
         .expect(200)
         .then((response) => {
-          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles.length).toBeLessThanOrEqual(13);
+          expect(response.body.articles.length).toBeGreaterThan(0);
           expect(response.body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
+        });
+    });
+  });
+  describe("/api/articles?limit=10", () => {
+    test("GET:200 responds with a list of articles given limit", () => {
+      return request(app)
+        .get("/api/articles?limit=5")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(5);
+        });
+    });
+    test("GET:200 responds with a list of articles with the limit of 10 by default", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(10);
+        });
+    });
+    test("GET:200 includes accurate total_count reflecting total articles", () => {
+      return request(app)
+        .get("/api/articles?limit=9")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.total_count).toBe(13);
+        });
+    });
+    test("GET:200 responds with accurate amount of articles respecting filters", () => {
+      return request(app)
+        .get("/api/articles?limit=5&topic=cats")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(1);
+          expect(response.body.total_count).toBe(1);
+        });
+    });
+    test("GET:400 responds with error message when given negative limit", () => {
+      return request(app)
+        .get("/api/articles?limit=-3")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("GET:400 responds with error message when given non-integer limit", () => {
+      return request(app)
+        .get("/api/articles?limit=notAnInteger")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+  });
+  describe("/api/articles?p=1", () => {
+    test("GET:200 responds with a correctly paginated list of articles given page number", () => {
+      return request(app)
+        .get("/api/articles?limit=2&p=3&sort_by=article_id&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(2);
+          expect(response.body.articles).toEqual([
+            {
+              article_id: 5,
+              title: "UNCOVERED: catspiracy to bring down democracy",
+              topic: "cats",
+              author: "rogersop",
+              created_at: expect.any(String),
+              votes: 0,
+              article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              comment_count: 2,
+            },
+            {
+              article_id: 6,
+              title: "A",
+              topic: "mitch",
+              author: "icellusedkars",
+              created_at: expect.any(String),
+              votes: 0,
+              article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              comment_count: 1,
+            },
+          ]);
+        });
+    });
+    test("GET:200 responds with a list of articles at page 1 by default", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(10);
+          response.body.articles.forEach((article, index) => {
+            expect(article.article_id).toBe(index + 1);
+          });
+        });
+    });
+    test("GET:200 responds with accurate amount of articles respecting filters", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles.length).toBe(1);
+          expect(response.body.articles[0].article_id).toBe(5);
+        });
+    });
+    test("GET:400 responds with error message when given negative page number", () => {
+      return request(app)
+        .get("/api/articles?p=-2")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("GET:400 responds with error message when given non-integer page number", () => {
+      return request(app)
+        .get("/api/articles?p=notAnInteger")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
         });
     });
   });
@@ -577,9 +692,7 @@ describe("App", () => {
           })
           .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe(
-              "Not found"
-            );
+            expect(response.body.msg).toBe("Not found");
           });
       });
       test("POST:404 responds with error message when given a valid but non-existent id", () => {
@@ -611,7 +724,7 @@ describe("App", () => {
           .post("/api/articles/2/comments")
           .send({
             body: "Hello World!",
-            username: ""
+            username: "",
           })
           .expect(400)
           .then((response) => {
@@ -702,7 +815,7 @@ describe("App", () => {
       test("PATCH:400 responds with error message when passed no data", () => {
         return request(app)
           .patch("/api/comments/1")
-          .send({ inc_votes: ""})
+          .send({ inc_votes: "" })
           .expect(400)
           .then((response) => {
             expect(response.body.msg).toBe("Bad request");

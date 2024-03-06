@@ -4,7 +4,8 @@ const {
   updateArticle,
   selectCommentsByArticleId,
   addCommentByArticleId,
-  addArticle
+  addArticle,
+  getTotalArticleCount,
 } = require("../models/articles.model");
 const { checkExists } = require("../db/seeds/utils");
 
@@ -30,15 +31,19 @@ exports.getArticles = async (req, res, next) => {
       "votes",
       "comment_count",
     ];
-    const topic = req.query.topic;
+    const topic = req.query.topic || null;
     const sortedBy = req.query.sort_by || "created_at";
     const order = req.query.order ? req.query.order.toUpperCase() : "DESC";
+    const limit = req.query.limit || 10;
+    const page = req.query.p || 1;
+    const isLimitInvalid = limit < 0 || isNaN(Number(limit));
+    const isPageInvalid = page < 0 || isNaN(Number(page));
 
     if (!validSortColumns.includes(sortedBy)) {
       return res.status(404).send({ msg: "Not found" });
     }
 
-    if (!validOrders.includes(order)) {
+    if (!validOrders.includes(order) || isLimitInvalid || isPageInvalid) {
       return res.status(400).send({ msg: "Bad request" });
     }
 
@@ -46,8 +51,9 @@ exports.getArticles = async (req, res, next) => {
       await checkExists("topics", "slug", topic);
     }
 
-    const articles = await selectArticles(topic, sortedBy, order);
-    res.status(200).send({ articles });
+    const articles = await selectArticles(topic, sortedBy, order, limit, page);
+    const totalCount = await getTotalArticleCount(topic);
+    res.status(200).send({ articles, total_count: Number(totalCount) });
   } catch (err) {
     next(err);
   }
@@ -108,11 +114,21 @@ exports.postCommentByArticleId = async (req, res, next) => {
 exports.postArticle = (req, res, next) => {
   const body = req.body;
 
-  if (!body.title || !body.topic || !body.author || !body.body || !body.article_img_url) {
+  if (
+    !body.title ||
+    !body.topic ||
+    !body.author ||
+    !body.body ||
+    !body.article_img_url
+  ) {
     return res.status(400).send({ msg: "Bad request" });
   }
 
-  Promise.all([checkExists("users", "username", body.author, true), checkExists("topics", "slug", body.topic, true), addArticle(body)])
+  Promise.all([
+    checkExists("users", "username", body.author, true),
+    checkExists("topics", "slug", body.topic, true),
+    addArticle(body),
+  ])
     .then((resolutions) => {
       res.status(201).send({ article: resolutions[2] });
     })
