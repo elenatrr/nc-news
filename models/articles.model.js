@@ -26,22 +26,36 @@ exports.selectArticleById = (articleId) => {
     });
 };
 
-exports.selectArticles = (topic, sortedBy, order) => {
+exports.selectArticles = (topic, sortedBy, order, limit, page) => {
+  const offset = (page - 1) * limit;
   let queryString = `SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
   CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
   FROM articles LEFT JOIN comments
   ON articles.article_id = comments.article_id`;
-  const queryParams = [];
+  const queryParams = [limit, offset];
 
   if (topic) {
-    queryString += " WHERE articles.topic = $1";
+    queryString += " WHERE articles.topic = $3";
     queryParams.push(topic);
   }
 
-  queryString += ` GROUP BY articles.article_id ORDER BY ${sortedBy} ${order}`;
-
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sortedBy} ${order} LIMIT $1 OFFSET $2`;
   return db.query(queryString, queryParams).then((result) => {
     return result.rows;
+  });
+};
+
+exports.getTotalArticleCount = (topic) => {
+  let queryString = `SELECT COUNT(*) AS total_count FROM articles`;
+  const queryParams = [];
+
+  if (topic) {
+    queryString += " WHERE articles.topic = $1;";
+    queryParams.push(topic);
+  }
+
+  return db.query(queryString, queryParams).then((result) => {
+    return result.rows[0].total_count;
   });
 };
 
@@ -85,7 +99,13 @@ exports.addArticle = (article) => {
   return db
     .query(
       "INSERT INTO articles (title, topic, author, body, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
-      [article.title, article.topic, article.author, article.body, article.article_img_url]
+      [
+        article.title,
+        article.topic,
+        article.author,
+        article.body,
+        article.article_img_url,
+      ]
     )
     .then((result) => {
       const articleId = result.rows[0].article_id;
