@@ -789,20 +789,20 @@ describe("App", () => {
           expect(response.body.comments.length).toBe(2);
           expect(response.body.comments).toEqual([{
             comment_id: 7,
-            body: 'Lobster pot',
+            body: "Lobster pot",
             article_id: 1,
-            author: 'icellusedkars',
+            author: "icellusedkars",
             votes: 0,
             created_at: expect.any(String),
           },
           {
             comment_id: 8,
-            body: 'Delicious crackerbreads',
+            body: "Delicious crackerbreads",
             article_id: 1,
-            author: 'icellusedkars',
+            author: "icellusedkars",
             votes: 0,
             created_at: expect.any(String),
-          }])
+          }]);
         });
     });
     test("GET:200 responds with a list of comments at page 1 by default", () => {
@@ -813,25 +813,25 @@ describe("App", () => {
           expect(response.body.comments.length).toBe(3);
           expect(response.body.comments).toEqual([{
             comment_id: 5,
-            body: 'I hate streaming noses',
+            body: "I hate streaming noses",
             article_id: 1,
-            author: 'icellusedkars',
+            author: "icellusedkars",
             votes: 0,
             created_at: expect.any(String),
           },
           {
             comment_id: 2,
-            body: 'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
             article_id: 1,
-            author: 'butter_bridge',
+            author: "butter_bridge",
             votes: 14,
             created_at: expect.any(String),
           },
           {
             comment_id: 18,
-            body: 'This morning, I showered for nine minutes.',
+            body: "This morning, I showered for nine minutes.",
             article_id: 1,
-            author: 'butter_bridge',
+            author: "butter_bridge",
             votes: 16,
             created_at: expect.any(String),
           }]);
