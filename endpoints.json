@@ -63,7 +63,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves a list of comments by article_id",
-    "queries": [],
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comments": [
         {

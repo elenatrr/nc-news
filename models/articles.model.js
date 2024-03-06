@@ -73,11 +73,12 @@ exports.updateArticle = (votes, articleId) => {
     });
 };
 
-exports.selectCommentsByArticleId = (articleId) => {
+exports.selectCommentsByArticleId = (articleId, limit, page) => {
+  const offset = (page - 1) * limit;
   return db
     .query(
-      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
-      [articleId]
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;",
+      [articleId, limit, offset]
     )
     .then((result) => {
       return result.rows;

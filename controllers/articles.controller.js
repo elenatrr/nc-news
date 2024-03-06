@@ -79,9 +79,17 @@ exports.patchArticle = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const articleId = req.params.article_id;
+  const limit = req.query.limit || 10;
+  const page = req.query.p || 1;
+  const isLimitInvalid = limit < 0 || isNaN(Number(limit));
+  const isPageInvalid = page < 0 || isNaN(Number(page));
+
+  if (isLimitInvalid || isPageInvalid) {
+    return res.status(400).send({ msg: "Bad request" });
+  }
 
   Promise.all([
-    selectCommentsByArticleId(articleId),
+    selectCommentsByArticleId(articleId, limit, page),
     checkExists("articles", "article_id", articleId),
   ])
     .then((resolutions) => {
