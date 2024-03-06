@@ -91,3 +91,6 @@ To interact with an available endpoint through your web browser, use the followi
 [link to hosted version]/api/users
 ```
 Navigate to the URL in your browser to view the response from the server.
+
+### Utilizing JSON Formatter for Better Visibility
+For an enhanced viewing experience of JSON data in your web browser, consider downloading a JSON Formatter browser extension. This tool formats JSON data in a tree view, making it easier to read and understand the data returned from the API endpoints.
