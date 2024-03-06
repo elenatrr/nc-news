@@ -613,7 +613,8 @@ describe("App", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then((response) => {
-            expect(response.body.comments.length).toBe(11);
+            expect(response.body.comments.length).toBeLessThanOrEqual(11);
+            expect(response.body.comments.length).toBeGreaterThan(0);
             response.body.comments.forEach((comment) => {
               expect(typeof comment.comment_id).toBe("number");
               expect(typeof comment.votes).toBe("number");
@@ -743,6 +744,114 @@ describe("App", () => {
             expect(response.body.msg).toBe("Bad request");
           });
       });
+    });
+  });
+  describe("/api/articles/:article_id/comments?limit=10", () => {
+    test("GET:200 responds with a list of comments given limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=3")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(3);
+        });
+    });
+    test("GET:200 responds with a list of comments with the limit of 10 by default", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(10);
+        });
+    });
+    test("GET:400 responds with error message when given negative limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=-3")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("GET:400 responds with error message when given non-integer limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=notAnInteger")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+  });
+  describe("/api/articles/:article_id/comments?p=1", () => {
+    test("GET:200 responds with a list of comments given page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=2&p=3")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(2);
+          expect(response.body.comments).toEqual([{
+            comment_id: 7,
+            body: 'Lobster pot',
+            article_id: 1,
+            author: 'icellusedkars',
+            votes: 0,
+            created_at: expect.any(String),
+          },
+          {
+            comment_id: 8,
+            body: 'Delicious crackerbreads',
+            article_id: 1,
+            author: 'icellusedkars',
+            votes: 0,
+            created_at: expect.any(String),
+          }])
+        });
+    });
+    test("GET:200 responds with a list of comments at page 1 by default", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=3")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments.length).toBe(3);
+          expect(response.body.comments).toEqual([{
+            comment_id: 5,
+            body: 'I hate streaming noses',
+            article_id: 1,
+            author: 'icellusedkars',
+            votes: 0,
+            created_at: expect.any(String),
+          },
+          {
+            comment_id: 2,
+            body: 'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+            article_id: 1,
+            author: 'butter_bridge',
+            votes: 14,
+            created_at: expect.any(String),
+          },
+          {
+            comment_id: 18,
+            body: 'This morning, I showered for nine minutes.',
+            article_id: 1,
+            author: 'butter_bridge',
+            votes: 16,
+            created_at: expect.any(String),
+          }]);
+        });
+    });
+    test("GET:400 responds with error message when given negative page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=-3")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+    test("GET:400 responds with error message when given non-integer page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=notAnInteger")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
     });
   });
   describe("/api/comments/:comment_id", () => {
