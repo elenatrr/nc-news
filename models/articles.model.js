@@ -46,7 +46,7 @@ exports.selectArticles = (topic, sortedBy, order, limit, page) => {
 };
 
 exports.getTotalArticleCount = (topic) => {
-  let queryString = `SELECT COUNT(*) AS total_count FROM articles`;
+  let queryString = "SELECT COUNT(*) AS total_count FROM articles";
   const queryParams = [];
 
   if (topic) {
