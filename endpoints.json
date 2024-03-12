@@ -12,7 +12,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles and accurate total count",
     "queries": ["topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
@@ -26,7 +26,8 @@
           "article_img_url": "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
           "comment_count": 11
         }
-      ]
+      ],
+      "total_count": 37
     }
   },
   "POST /api/articles": {
@@ -67,7 +68,7 @@
         "votes": 0,
         "article_img_url": "https://images.pexels.com/photos/14011035/pexels-photo-14011035.jpeg?w=700&h=700",
         "comment_count": 6
-        }
+      }
     }
   },
   "GET /api/articles/:article_id/comments": {
